@@ -8,4 +8,5 @@
 # Crash log files
 crash.log
 
-credentials/*
+# Secret var file
+secrets.auto.tfvars
