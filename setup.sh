@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Print commands as they are exacuted
+set -x
+
 #Credit for this function goes to, https://gist.github.com/danisla/0a394c75bddce204688b21e28fd2fea5
 function terraform-install() {
   [[ -f ${HOME}/bin/terraform ]] && echo "`${HOME}/bin/terraform version` already installed at ${HOME}/bin/terraform" && return 0
@@ -29,8 +32,23 @@ function upload_secrets() {
   gsutil cp secrets.auto.tfvars gs://reebric-terraform-admin/terraform/secrets.auto.tfvars
 }
 
+function setup_gcloud_repo() {
+  sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
+[google-cloud-sdk]
+name=Google Cloud SDK
+baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+       https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOM
+}
+
 function install_prereqs() {
-  sudo yum install curl jq
+  yum install -y curl jq
+  setup_gcloud_repo
+  yum install -y google-cloud-sdk
 }
 
 function parse_args() {
@@ -45,6 +63,7 @@ function parse_args() {
       terraform-install
       ;;
     init)
+      install_prereqs
       terraform-install
       download_secrets
       ;;
@@ -55,3 +74,4 @@ function parse_args() {
 }
 
 parse_args $*
+set +x
