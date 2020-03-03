@@ -51,6 +51,63 @@ function install_prereqs() {
   yum install -y google-cloud-sdk
 }
 
+function setup_gcp() {
+  _IFS=$IFS
+  IFS="="
+  while read -r name value
+  do
+    export $name="$value"
+  done < secrets.auto.tfvars
+  IFS=$_IFS
+  unset _IFS
+  gcloud projects create ${TF_ADMIN} \
+     --organization ${org_id} --set-as-default
+
+  gcloud beta billing projects link ${TF_ADMIN} \
+     --billing-account ${billing_account}
+
+  gcloud iam service-accounts create terraform \
+    --display-name "Terraform admin account"
+
+  gcloud iam service-accounts keys create ${TF_CREDS} \
+    --iam-account terraform@${TF_ADMIN}.iam.gserviceaccount.com
+
+  gcloud projects add-iam-policy-binding ${TF_ADMIN} \
+    --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+    --role roles/viewer
+
+  gcloud projects add-iam-policy-binding ${TF_ADMIN} \
+    --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+    --role roles/storage.admin
+
+  gcloud services enable cloudresourcemanager.googleapis.com
+  gcloud services enable cloudbilling.googleapis.com
+  gcloud services enable iam.googleapis.com
+  gcloud services enable compute.googleapis.com
+  gcloud services enable serviceusage.googleapis.com
+
+  gcloud organizations add-iam-policy-binding ${org_id} \
+    --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+    --role roles/resourcemanager.projectCreator
+
+  gcloud organizations add-iam-policy-binding ${org_id} \
+    --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+    --role roles/billing.user
+
+  gsutil mb -p ${TF_ADMIN} gs://${TF_ADMIN}
+
+  cat > backend.tf << EOF
+terraform {
+ backend "gcs" {
+   bucket  = "${TF_ADMIN}"
+   prefix  = "terraform/state"
+ }
+}
+EOF
+
+  gsutil versioning set on gs://${TF_ADMIN}
+}
+
 function parse_args() {
   case "$1" in
     download)
@@ -67,8 +124,12 @@ function parse_args() {
       terraform-install
       download_secrets
       ;;
+    gcp_init)
+      #setup_gcp
+      echo "Work in progress..."
+      ;;
     *)
-      echo "Usage: $0 {download|upload|setup|init}"
+      echo "Usage: $0 {download|upload|setup|init|gcp_init}"
       ;;
   esac
 }
