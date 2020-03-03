@@ -20,5 +20,38 @@ Run the following to reload your PATH with terraform:
 EOF
 }
 
-sudo yum install curl jq
-terraform-install
+#!/bin/bash
+function download_secrets() {
+  gsutil cp gs://reebric-terraform-admin/terraform/secrets.auto.tfvars secrets.auto.tfvars
+}
+
+function upload_secrets() {
+  gsutil cp secrets.auto.tfvars gs://reebric-terraform-admin/terraform/secrets.auto.tfvars
+}
+
+function install_prereqs() {
+  sudo yum install curl jq
+}
+
+function parse_args() {
+  case "$1" in
+    download)
+      download_secrets
+      ;;
+    upload)
+      upload_secrets
+      ;;
+    setup)
+      terraform-install
+      ;;
+    init)
+      terraform-install
+      download_secrets
+      ;;
+    *)
+      echo "Usage: $0 {download|upload|setup|init}"
+      ;;
+  esac
+}
+
+parse_args $*
