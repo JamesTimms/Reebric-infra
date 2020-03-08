@@ -1,17 +1,17 @@
 #!/bin/bash
 
 #Print commands as they are exacuted
-set -x
+#set -x
 
 #Credit for this function goes to, https://gist.github.com/danisla/0a394c75bddce204688b21e28fd2fea5
-function terraform-install() {
+function terraform_install() {
   [[ -f ${HOME}/bin/terraform ]] && echo "`${HOME}/bin/terraform version` already installed at ${HOME}/bin/terraform" && return 0
   LATEST_URL=$(curl -sL https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | egrep -v 'rc|beta' | egrep 'linux.*amd64' |tail -1)
   curl ${LATEST_URL} > /tmp/terraform.zip
   mkdir -p ${HOME}/bin
   (cd ${HOME}/bin && unzip /tmp/terraform.zip)
   if [[ -z $(grep 'export PATH=${HOME}/bin:${PATH}' ~/.bashrc) ]]; then
-  	echo 'export PATH=${HOME}/bin:${PATH}' >> ~/.bashrc
+    echo 'export PATH=${HOME}/bin:${PATH}' >> ~/.bashrc
   fi
   
   echo "Installed: `${HOME}/bin/terraform version`"
@@ -23,7 +23,27 @@ Run the following to reload your PATH with terraform:
 EOF
 }
 
-#!/bin/bash
+function terragrunt_install() {
+  [[ -f ${HOME}/bin/terragrunt ]] && echo "`${HOME}/bin/terragrunt version` already installed at ${HOME}/bin/terragrunt" && return 0
+  terragrunt_version="v0.23.0"
+  echo ${terragrunt_version}
+  wget https://github.com/gruntwork-io/terragrunt/releases/download/${terragrunt_version}/terragrunt_linux_amd64 -O /tmp/terragrunt
+  chmod +x /tmp/terragrunt
+  mkdir -p ${HOME}/bin
+  mv /tmp/terragrunt ${HOME}/bin
+  if [[ -z $(grep 'export PATH=${HOME}/bin:{$PATH}' ~/.bashrc) ]]; then
+    echo 'export PATH=${HOME}/bin:${PATH}' >> ~/.bashrc
+  fi
+
+  echo "Installed: $(${HOME}/bin/terragrunt | grep -A 1 'VERSION:')"
+
+  cat - << EOF
+
+Run the following to reload your PATH with terragrunt:
+  source ~/.bashrc
+EOF
+}
+
 function download_secrets() {
   gsutil cp gs://reebric-terraform-admin/terraform/secrets.auto.tfvars secrets.auto.tfvars
 }
@@ -117,7 +137,8 @@ function parse_args() {
       upload_secrets
       ;;
     setup)
-      terraform-install
+      terraform_install
+      terragrunt_install
       ;;
     init)
       install_prereqs
@@ -135,4 +156,4 @@ function parse_args() {
 }
 
 parse_args $*
-set +x
+#set +x
