@@ -1,6 +1,6 @@
 terraform {
  backend "gcs" {
    bucket  = "reebric-terraform-admin"
-   prefix  = "terraform/state"
+   prefix  = "terraform/state/infra-dev"
  }
 }
