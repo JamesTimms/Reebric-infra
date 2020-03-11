@@ -15,7 +15,7 @@ module "net-firewall" {
   internal_ranges_enabled = true
   internal_ranges         = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"]
   custom_rules = {
-    reebric-ssh-home-all-ssh-allow = {
+    reebric-home-all-ssh-allow = {
       description          = "Allow SSH from home IP to all instances."
       direction            = "INGRESS"
       action               = "allow"
@@ -41,8 +41,28 @@ module "net-firewall" {
       use_service_accounts = false
       rules = [
         {
+          protocol = "icmp"
+          ports    = null
+        }
+      ]
+      extra_attributes = {}
+    }
+    reebric-internal-allow-all = {
+      description          = "Allow all TCP and UDP internal traffic."
+      direction            = "INGRESS"
+      action               = "allow"
+      ranges               = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"]
+      sources              = null
+      targets              = null
+      use_service_accounts = false
+      rules = [
+        {
           protocol = "tcp"
-          ports    = [22]
+          ports    = ["0-65535"]
+        },
+        {
+          protocol = "udp"
+          ports    = ["0-65535"]
         }
       ]
       extra_attributes = {} 
