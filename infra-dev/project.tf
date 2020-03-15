@@ -24,3 +24,14 @@ resource "google_project_service" "service" {
   project = google_project.project.project_id
   disable_on_destroy = false
 }
+
+resource "google_compute_project_metadata" "metadata" {
+  project = google_project.project.project_id 
+  metadata = {
+    startup-script-url = "gs://reebric-terraform-admin/terraform/startup/startup.sh"
+    ssh-keys = <<EOF
+james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB7zOql9P4RtKMk0Adh3OwRBCgqmyjqD2tHIJ6Zq/NIu james@home
+james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPceeomxGZ5P+BFM8JK4r4lmXzzVVVFkiWBbhGw3nVzn james@home2
+EOF
+  }
+}
