@@ -32,6 +32,7 @@ resource "google_compute_project_metadata" "metadata" {
     ssh-keys = <<EOF
 james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB7zOql9P4RtKMk0Adh3OwRBCgqmyjqD2tHIJ6Zq/NIu james@home
 james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPceeomxGZ5P+BFM8JK4r4lmXzzVVVFkiWBbhGw3nVzn james@home2
+james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBpt9lI0ol2EGdQd7o2SuhjYwxk2P4uGkiFUgqvpqZfB james@beepboop
 EOF
   }
 }
