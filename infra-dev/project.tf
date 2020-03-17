@@ -28,7 +28,7 @@ resource "google_project_service" "service" {
 resource "google_compute_project_metadata" "metadata" {
   project = google_project.project.project_id 
   metadata = {
-    startup-script-url = "gs://reebric-terraform-admin/terraform/startup/startup.sh"
+    startup-script-url = "${google_storage_bucket.project_bucket.url}/${google_storage_bucket_object.startup.output_name}"
     ssh-keys = <<EOF
 james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB7zOql9P4RtKMk0Adh3OwRBCgqmyjqD2tHIJ6Zq/NIu james@home
 james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPceeomxGZ5P+BFM8JK4r4lmXzzVVVFkiWBbhGw3nVzn james@home2
