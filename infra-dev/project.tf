@@ -36,3 +36,7 @@ james:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBpt9lI0ol2EGdQd7o2SuhjYwxk2P4uGkiFUgq
 EOF
   }
 }
+
+data "google_compute_default_service_account" "default_sa" {
+  project = google_project.project.project_id  
+}

@@ -22,3 +22,8 @@ output "startup_script" {
   value       = google_storage_bucket_object.startup.self_link
   description = "The GS bucket location of the startup.sh"
 }
+
+output "default_sa" {
+  value       = data.google_compute_default_service_account.default_sa.email
+  description = "Default service account for the project"
+}
