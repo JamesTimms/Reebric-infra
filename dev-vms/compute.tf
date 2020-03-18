@@ -4,6 +4,8 @@ resource "google_compute_instance" "vm_instance" {
   name            = "gcp-dev"
   machine_type    = "f1-micro"
 
+  allow_stopping_for_update = false
+
   service_account {
     email  = "${data.terraform_remote_state.infra_dev.outputs.default_sa}"
     scopes = [
@@ -16,7 +18,9 @@ resource "google_compute_instance" "vm_instance" {
     ]
   }
 
-  allow_stopping_for_update = false
+  metadata = {
+    startup-script-url = "${data.terraform_remote_state.infra_dev.outputs.startup_script}"
+  }
 
   boot_disk {
     initialize_params {
