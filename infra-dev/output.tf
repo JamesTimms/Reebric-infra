@@ -19,7 +19,7 @@ output "storage_bucket" {
 }
 
 output "startup_script" {
-  value       = google_storage_bucket_object.startup.self_link
+  value       = "gs://${google_storage_bucket_object.startup.bucket}/${google_storage_bucket_object.startup.name}"
   description = "The GS bucket location of the startup.sh"
 }
 
