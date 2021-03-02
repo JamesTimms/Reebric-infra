@@ -3,7 +3,7 @@ resource "google_storage_bucket" "project_bucket" {
   location      = "EU"
   force_destroy = false
 
-  bucket_policy_only = true
+  uniform_bucket_level_access = true
 
 }
 

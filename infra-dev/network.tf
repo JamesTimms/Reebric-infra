@@ -2,7 +2,7 @@ variable "network_name" {}
 
 module "vpc" {
   source  = "terraform-google-modules/network/google"
-  version = "2.1.1"
+  version = "3.1.2"
   
   project_id   = google_project.project.project_id
   network_name = var.network_name
