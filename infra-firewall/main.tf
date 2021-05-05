@@ -9,9 +9,11 @@ provider "null" {
 }
 
 module "net-firewall" {
-  source                  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  project_id              = "${data.terraform_remote_state.infra_dev.outputs.project_id}"
-  network                 = "${data.terraform_remote_state.infra_dev.outputs.vpc_name}"
+  source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
+  version = "2.3.0"
+
+  project_id              = data.terraform_remote_state.infra_dev.outputs.project_id
+  network                 = data.terraform_remote_state.infra_dev.outputs.vpc_name
   internal_ranges_enabled = true
   internal_ranges         = ["10.0.0.0/8", "192.168.0.0/16", "172.16.0.0/12"]
   custom_rules = {
@@ -19,7 +21,7 @@ module "net-firewall" {
       description          = "Allow SSH from home IP to all instances."
       direction            = "INGRESS"
       action               = "allow"
-      ranges               = ["${var.home_ip}"]
+      ranges               = [var.home_ip]
       sources              = null
       targets              = null
       use_service_accounts = false

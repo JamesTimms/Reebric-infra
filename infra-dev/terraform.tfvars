@@ -1,4 +1,4 @@
-project_name="devyard"
-region="europe-west2"
-zone="europe-west2-c"
-network_name="reebric-terraform"
+zone         ="europe-west2-c"
+region       ="europe-west2"
+network_name ="reebric-terraform"
+project_name ="devyard"
